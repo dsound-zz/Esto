@@ -1,0 +1,2 @@
+class ProjectImagesController < ApplicationController
+end

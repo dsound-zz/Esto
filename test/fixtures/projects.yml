@@ -1,7 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  old_project_id: 1
+  old_project_id: 
   first_name: MyString
   last_name: MyString
   role: MyString
@@ -11,7 +11,7 @@ one:
   company_id: MyString
 
 two:
-  old_project_id: 1
+  old_project_id: 
   first_name: MyString
   last_name: MyString
   role: MyString

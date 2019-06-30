@@ -4,7 +4,7 @@ class CreateCompanies < ActiveRecord::Migration[5.2]
       t.integer :old_company_id
       t.string :name
       t.string :company_phone
-      t.references :addressable, polymorphic: true
+      t.references :addressable, polymorphic: true, index: true
 
       t.timestamps
     end

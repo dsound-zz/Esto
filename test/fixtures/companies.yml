@@ -1,15 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  old_company_id: 1
+  old_company_id: 
   name: MyString
   company_phone: MyString
-  addressable: one
-  addressable_type: Addressable
+ 
 
 two:
-  old_company_id: 1
+  old_company_id: 
   name: MyString
   company_phone: MyString
-  addressable: two
-  addressable_type: Addressable
+

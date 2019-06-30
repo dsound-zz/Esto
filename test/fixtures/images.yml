@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  old_image_id: 
+  file_num: MyString
+  caption: MyString
+  location: MyString
+  photographer: MyString
+  size: MyString
+
+two:
+  old_image_id: 
+  file_num: MyString
+  caption: MyString
+  location: MyString
+  photographer: MyString
+  size: MyString

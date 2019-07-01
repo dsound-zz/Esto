@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_30_212737) do
+ActiveRecord::Schema.define(version: 2019_07_01_014544) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,17 +27,20 @@ ActiveRecord::Schema.define(version: 2019_06_30_212737) do
     t.datetime "updated_at", null: false
     t.string "country"
     t.integer "old_address_id"
+    t.boolean "address_type"
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable_type_and_addressable_id"
   end
 
   create_table "companies", force: :cascade do |t|
     t.integer "old_company_id"
     t.string "name"
-    t.string "company_phone"
     t.string "addressable_type"
     t.bigint "addressable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "website"
+    t.boolean "company_status"
+    t.string "library_dir"
     t.index ["addressable_type", "addressable_id"], name: "index_companies_on_addressable_type_and_addressable_id"
   end
 

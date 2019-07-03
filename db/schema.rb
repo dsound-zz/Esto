@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_01_014544) do
+ActiveRecord::Schema.define(version: 2019_07_03_003747) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2019_07_01_014544) do
     t.string "website"
     t.boolean "company_status"
     t.string "library_dir"
+    t.string "legacy_compid"
     t.index ["addressable_type", "addressable_id"], name: "index_companies_on_addressable_type_and_addressable_id"
   end
 
@@ -55,7 +56,6 @@ ActiveRecord::Schema.define(version: 2019_07_01_014544) do
     t.integer "old_contact_id"
     t.string "first_name"
     t.string "last_name"
-    t.string "role"
     t.string "office_email"
     t.string "personal_email"
     t.string "facetime"
@@ -68,6 +68,10 @@ ActiveRecord::Schema.define(version: 2019_07_01_014544) do
     t.bigint "addressable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "title"
+    t.string "source"
+    t.string "legacy_personid"
+    t.string "department"
     t.index ["addressable_type", "addressable_id"], name: "index_contacts_on_addressable_type_and_addressable_id"
   end
 
@@ -116,6 +120,18 @@ ActiveRecord::Schema.define(version: 2019_07_01_014544) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["addressable_type", "addressable_id"], name: "index_invoices_on_addressable_type_and_addressable_id"
+  end
+
+  create_table "phones", force: :cascade do |t|
+    t.string "old_phone_id"
+    t.string "phone_type"
+    t.string "phone_num"
+    t.string "phone_initid"
+    t.string "contact_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "phone_country_code"
+    t.string "phone_area_code"
   end
 
   create_table "project_contacts", force: :cascade do |t|

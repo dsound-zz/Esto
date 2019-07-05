@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_03_003747) do
+ActiveRecord::Schema.define(version: 2019_07_05_001644) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,15 +34,13 @@ ActiveRecord::Schema.define(version: 2019_07_03_003747) do
   create_table "companies", force: :cascade do |t|
     t.integer "old_company_id"
     t.string "name"
-    t.string "addressable_type"
-    t.bigint "addressable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "website"
     t.boolean "company_status"
     t.string "library_dir"
     t.string "legacy_compid"
-    t.index ["addressable_type", "addressable_id"], name: "index_companies_on_addressable_type_and_addressable_id"
+    t.integer "old_address_id"
   end
 
   create_table "company_projects", force: :cascade do |t|
@@ -64,15 +62,12 @@ ActiveRecord::Schema.define(version: 2019_07_03_003747) do
     t.string "personal_phone"
     t.string "fax"
     t.integer "comapny_id"
-    t.string "addressable_type"
-    t.bigint "addressable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "title"
     t.string "source"
     t.string "legacy_personid"
     t.string "department"
-    t.index ["addressable_type", "addressable_id"], name: "index_contacts_on_addressable_type_and_addressable_id"
   end
 
   create_table "employee_projects", force: :cascade do |t|
@@ -115,11 +110,8 @@ ActiveRecord::Schema.define(version: 2019_07_03_003747) do
     t.string "name"
     t.string "company_phone"
     t.integer "project_id"
-    t.string "addressable_type"
-    t.bigint "addressable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["addressable_type", "addressable_id"], name: "index_invoices_on_addressable_type_and_addressable_id"
   end
 
   create_table "phones", force: :cascade do |t|
@@ -132,6 +124,7 @@ ActiveRecord::Schema.define(version: 2019_07_03_003747) do
     t.datetime "updated_at", null: false
     t.string "phone_country_code"
     t.string "phone_area_code"
+    t.string "phone_ext"
   end
 
   create_table "project_contacts", force: :cascade do |t|

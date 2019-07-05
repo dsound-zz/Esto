@@ -131,36 +131,55 @@ def phones
 
     CSV.foreach('public/OldCSVFiles/Esto - Phone - Esto - Phone.csv', headers: true) do |row|
         if row['Phon_Number'] 
+            fixed_phone = phone_num(row['Phon_Number'])
             phones.push({
-                phone_type: 'Office Phone'
-            **(['Phon_CountryCode'] ? { phone_country_code: row['Phon_CountryCode'] } : { phone_country_code: '01'}),
-            if row['Phon_Area_Code'] 
-             phones.push({  phone_area_code: row['Phon_AreaCode'] && row['Phon_AreaCode'].size == 3 })
-            else 
-                if row['Phon_Number'].size > 7
-               phones.push({ phone_area_code: row['Phon_Number'][0..2] })
-                end 
-            end
-            if row['Phon_Number'] > 7
-               phone_num_ary = row['Phon_Number'].split('')
-                phone_num_ary.each do |num| 
-                    while phone_num_ary > 7 
-                        phone_num_ary.shift()
-                    end
-                end 
-            end 
-                phones.push({phone_num: fixed_number(row['Phon_Number'])[0]})
-                phones.push({phone_ext: fixed_number(row['Phon_Number'])[1]}) 
-            else 
-                phones.push({phone_num: row['Phon_Number']}) 
-            end 
+                phone_type: 'Office Phone',
+                phone_country_code: phone_country_code(row['Phon_CountryCode']),
+                phone_area_code: phone_area_code(row['Phon_AreaCode'], row['Phon_Number']),
+                phone_num: fixed_phone[0],
+                phone_ext: fixed_phone[1]
+            }) 
+             
         end   
     end    
-    Phone.import column, phones, validate: false
+    Phone.import columns, phones, validate: false
 end 
 
+def phone_country_code(phone_cc)
+    if phone_cc 
+        phone_cc
+    else  
+        '01' 
+    end 
+end 
 
-def fix_number(num)
+def phone_area_code(phone_ac, phone_num)
+    if phone_ac && phone_ac.size == 3 
+        phone_ac 
+    else 
+        if phone_num.size > 7
+            phone_num[0..2] 
+        end       
+     end
+end 
+
+def phone_num(phone_n)
+    if phone_n.size  > 7
+        phone_num_ary = phone_n.split('')
+        phone_num_ary.each do |num| 
+            while phone_num_ary.size > 7 
+                phone_num_ary.shift()
+            end
+        end 
+    else  
+        fix_phone_number(phone_n)
+    end 
+end
+
+
+
+
+def fix_phone_number(num)
   fixed_phone = []
   fixed = num.gsub(' ', '').split('')
   extension = ''
@@ -180,5 +199,5 @@ end
 # addresses
 companies 
 # contacts
-# phones  
+phones  
 

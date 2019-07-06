@@ -7,7 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 Address.destroy_all 
-Company.destroy_all
+# Company.destroy_all
 CompanyProject.destroy_all 
 Contact.destroy_all 
 EmployeeProject.destroy_all 
@@ -125,20 +125,24 @@ def phones
         :phone_country_code, 
         :phone_area_code,
         :phone_num,
+        :phone_ext, 
         :phone_initid, 
-        :contact_id 
+        :phone_foreign_id
     ]
 
     CSV.foreach('public/OldCSVFiles/Esto - Phone - Esto - Phone.csv', headers: true) do |row|
         if row['Phon_Number'] 
             fixed_phone = phone_num(row['Phon_Number'])
             phones.push({
+                old_phone_id: row['Phon_PhoneId'],
                 phone_type: 'Office Phone',
                 phone_country_code: phone_country_code(row['Phon_CountryCode']),
                 phone_area_code: phone_area_code(row['Phon_AreaCode'], row['Phon_Number']),
-                phone_num: fixed_phone[0],
-                phone_ext: fixed_phone[1]
-            }) 
+                phone_num: phone_num(row['Phon_Number'])[0],
+                phone_ext: phone_num(row['Phon_Number'])[1],
+                phone_initid: row['phon_initid'],
+                phone_foreign_id: row['phon_intforeignid']
+             }) 
              
         end   
     end    
@@ -164,12 +168,15 @@ def phone_area_code(phone_ac, phone_num)
 end 
 
 def phone_num(phone_n)
-    if phone_n.size  > 7
+    fixed_phone_num = []
+    if phone_n.size == 10 || phone_n[0] == "1"
         phone_num_ary = phone_n.split('')
         phone_num_ary.each do |num| 
             while phone_num_ary.size > 7 
-                phone_num_ary.shift()
+               fixed_phone_num = phone_num_ary.shift()
             end
+            
+            fixed_phone_num.join('') 
         end 
     else  
         fix_phone_number(phone_n)
@@ -197,7 +204,7 @@ end
     
 
 # addresses
-companies 
+# companies 
 # contacts
 phones  
 

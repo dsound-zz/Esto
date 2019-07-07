@@ -129,59 +129,40 @@ def phones
         :phone_initid, 
         :phone_foreign_id
     ]
-
+  
     CSV.foreach('public/OldCSVFiles/Esto - Phone - Esto - Phone.csv', headers: true) do |row|
         if row['Phon_Number'] 
-            fixed_phone = phone_num(row['Phon_Number'])
-            phones.push({
-                old_phone_id: row['Phon_PhoneId'],
-                phone_type: 'Office Phone',
-                phone_country_code: phone_country_code(row['Phon_CountryCode']),
-                phone_area_code: phone_area_code(row['Phon_AreaCode'], row['Phon_Number']),
-                phone_num: phone_num(row['Phon_Number'])[0],
-                phone_ext: phone_num(row['Phon_Number'])[1],
-                phone_initid: row['phon_initid'],
-                phone_foreign_id: row['phon_intforeignid']
-             }) 
-             
-        end   
-    end    
-    Phone.import columns, phones, validate: false
+            if !row['Phon_CountryCode'] 
+                row['Phon_CountryCode'] = '1'
+            end 
+            if !row['Phon_AreaCode']
+                row['Phon_AreaCode'] = row['Phon_Number'][0..2]
+            end 
+            phone_number = row['Phon_CountryCode'] + row['Phon_AreaCode'] + row['Phon_Number']
+            phone_number = phone_number.gsub(' ', '')
+            phone_number = phone_number.sub('x', ';')
+            phones.push(phone_number)
+                    
+          
+         
+            #  phones.push({
+            #     old_phone_id: row['Phon_PhoneId'],
+            #     phone_type: 'Office Phone',
+            #     phone_country_code: '',
+            #     phone_area_code: '',
+            #     phone_num: '',
+            #     phone_ext: '',
+            #     phone_initid: '',
+            #     phone_foreign_id: ''
+            #  }) 
+           
+        end  
+        
+    end  
+    byebug  
+    # Phone.import columns, phones, validate: false
 end 
 
-def phone_country_code(phone_cc)
-    if phone_cc 
-        phone_cc
-    else  
-        '01' 
-    end 
-end 
-
-def phone_area_code(phone_ac, phone_num)
-    if phone_ac && phone_ac.size == 3 
-        phone_ac 
-    else 
-        if phone_num.size > 7
-            phone_num[0..2] 
-        end       
-     end
-end 
-
-def phone_num(phone_n)
-    fixed_phone_num = []
-    if phone_n.size == 10 || phone_n[0] == "1"
-        phone_num_ary = phone_n.split('')
-        phone_num_ary.each do |num| 
-            while phone_num_ary.size > 7 
-               fixed_phone_num = phone_num_ary.shift()
-            end
-            
-            fixed_phone_num.join('') 
-        end 
-    else  
-        fix_phone_number(phone_n)
-    end 
-end
 
 
 

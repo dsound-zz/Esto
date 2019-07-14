@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email_link_id: 1
+  email_address: MyString
+  email_type: MyString
+  email_deleted: MyString
+  email_intforeignid: MyString
+  email_intid: MyString
+  contact_id: 1
+
+two:
+  email_link_id: 1
+  email_address: MyString
+  email_type: MyString
+  email_deleted: MyString
+  email_intforeignid: MyString
+  email_intid: MyString
+  contact_id: 1

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_05_133833) do
+ActiveRecord::Schema.define(version: 2019_07_14_013222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2019_07_05_133833) do
     t.datetime "updated_at", null: false
     t.string "country"
     t.integer "old_address_id"
-    t.boolean "address_type"
+    t.boolean "address_type", default: true
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable_type_and_addressable_id"
   end
 
@@ -54,13 +54,6 @@ ActiveRecord::Schema.define(version: 2019_07_05_133833) do
     t.integer "old_contact_id"
     t.string "first_name"
     t.string "last_name"
-    t.string "office_email"
-    t.string "personal_email"
-    t.string "facetime"
-    t.string "office_phone"
-    t.string "cell_phone"
-    t.string "personal_phone"
-    t.string "fax"
     t.integer "comapny_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -68,6 +61,20 @@ ActiveRecord::Schema.define(version: 2019_07_05_133833) do
     t.string "source"
     t.string "legacy_personid"
     t.string "department"
+    t.string "old_address_id"
+    t.string "old_company_id"
+  end
+
+  create_table "emails", force: :cascade do |t|
+    t.integer "email_link_id"
+    t.string "email_address"
+    t.string "email_intforeignid"
+    t.string "email_intid"
+    t.integer "contact_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "email_type"
+    t.boolean "email_deleted"
   end
 
   create_table "employee_projects", force: :cascade do |t|

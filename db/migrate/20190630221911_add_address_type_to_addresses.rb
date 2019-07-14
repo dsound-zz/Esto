@@ -1,5 +1,5 @@
 class AddAddressTypeToAddresses < ActiveRecord::Migration[5.2]
   def change
-    add_column :addresses, :address_type, :boolean
+    add_column :addresses, :address_type, :boolean, default: true 
   end
 end

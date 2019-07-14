@@ -6,10 +6,11 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-Address.destroy_all 
+# Address.destroy_all 
 # Company.destroy_all
 CompanyProject.destroy_all 
 Contact.destroy_all 
+Email.destroy_all
 EmployeeProject.destroy_all 
 Employee.destroy_all 
 Image.destroy_all 
@@ -17,7 +18,7 @@ Invoice.destroy_all
 ProjectContact.destroy_all 
 ProjectImage.destroy_all 
 Project.destroy_all 
-Phone.destroy_all 
+# Phone.destroy_all 
 
 require 'csv'
 
@@ -32,7 +33,8 @@ def addresses
             :city, 
             :state, 
             :country, 
-            :zipcode
+            :zipcode,
+            :address_type
         ]
 
         CSV.foreach('public/OldCSVFiles/esto - address - esto - address.csv', headers: true) do |row|   
@@ -46,7 +48,7 @@ def addresses
                         state: row['Addr_State'],
                         country: row['Addr_Country'],
                         zipcode: row['Addr_PostCode'],
-                        address_type: true 
+                        address_type: true
                     })
             end
         end
@@ -85,23 +87,24 @@ def companies
 end 
 
 def contacts
-
     contacts = []
     columns = 
     [
         :old_contact_id,
+        :old_company_id,
+        :old_address_id,
         :title,
         :first_name, 
         :last_name, 
-        :office_email, 
-        :personal_email, 
-        :company_id,
     ]
 
     CSV.foreach('public/OldCSVFiles/esto - person - esto - person.csv', headers: true) do |row| 
         if row['Pers_FirstName'] || row['Pers_LastName']
             contacts.push(
             {
+                old_contact_id: row['Pers_PersonId'],
+                old_company_id: row['Pers_CompanyId'],
+                old_address_id: row['Pers_PrimaryAddressId'],
                 first_name: row['Pers_FirstName'],
                 last_name: row['Pers_LastName'],
                 title: row['Pers_Title'],
@@ -111,16 +114,19 @@ def contacts
         end 
     end
             
-        Contact.import column, contacts, validate: false 
+        Contact.import columns, contacts, validate: false 
 end
 
 
 def phones 
+    fixedCounryCode = nil 
     area_code = nil
     phones = []
     columns = 
     [
         :old_phone_id,
+        :old_company_id,
+        :old_address_id,
         :phone_type,
         :phone_country_code, 
         :phone_area_code,
@@ -128,64 +134,92 @@ def phones
         :phone_ext, 
         :phone_initid, 
         :phone_foreign_id
+        
     ]
   
     CSV.foreach('public/OldCSVFiles/Esto - Phone - Esto - Phone.csv', headers: true) do |row|
         if row['Phon_Number'] 
-            if !row['Phon_CountryCode'] 
-                row['Phon_CountryCode'] = '1'
-            end 
-            if !row['Phon_AreaCode']
+            row['Phon_CountryCode'] = "1" if row['Phon_CountryCode'] == nil || row['Phon_CountryCode'].to_i == 0
+          
+                if !row['Phon_AreaCode']
                 row['Phon_AreaCode'] = row['Phon_Number'][0..2]
-            end 
+                end 
             phone_number = row['Phon_CountryCode'] + row['Phon_AreaCode'] + row['Phon_Number']
             phone_number = phone_number.gsub(' ', '')
             phone_number = phone_number.sub('x', ';')
-            phones.push(phone_number)
+            phone = Phonelib.parse(phone_number)
                     
           
          
-            #  phones.push({
-            #     old_phone_id: row['Phon_PhoneId'],
-            #     phone_type: 'Office Phone',
-            #     phone_country_code: '',
-            #     phone_area_code: '',
-            #     phone_num: '',
-            #     phone_ext: '',
-            #     phone_initid: '',
-            #     phone_foreign_id: ''
-            #  }) 
+             phones.push({
+                old_phone_id: row['Phon_PhoneId'],
+                phone_type: 'Office Phone',
+                phone_country_code: phone.country_code,
+                phone_area_code: phone.area_code,
+                phone_num: phone.local_number,
+                phone_ext: (phone.extension if phone.extension),
+                phone_initid: row['phon_intid'],
+                phone_foreign_id: row['phon_intforeignid']
+             }) 
            
         end  
         
     end  
-    byebug  
-    # Phone.import columns, phones, validate: false
+    
+    Phone.import columns, phones, validate: false
 end 
 
+def emails
+    emails = []
+    columns = 
+    [
+        :eamil_link_id,
+        :email_address, 
+        :email_type,
+        :email_deleted,
+        :email_intforeegnid,
+        :email_intid
+    ]
+
+    CSV.foreach('public/OldCSVFiles/Esto - Email MAP.xlsx - Esto - Email.csv', headers: true) do |row| 
+        if row['email_address']
+            emails.push({
+                email_link_id: row['Emai_EmailId'],
+                email_address: row['Emai_EmailAddress'],
+                email_type: 'temporary',
+                email_deleted: (true if row['Emai_Deleted'] == '1'),
+                email_intforeignid: row['emai_intforeignid'],
+                eamil_intid: row['eami_intid']
+            })
+        end
+    end
+    Email.import columns, emails, validate: false 
+end
 
 
 
+# old method for fixing phone numbers - not used
 
-def fix_phone_number(num)
-  fixed_phone = []
-  fixed = num.gsub(' ', '').split('')
-  extension = ''
-  fixed.reverse.each do |n| 
-    fixed.pop()
-    extension += n 
-      if n == 'x' 
-      fixed_phone = extension.reverse, fixed.join('') 
-      end 
-  end 
+# def fix_phone_number(num)
+#   fixed_phone = []
+#   fixed = num.gsub(' ', '').split('')
+#   extension = ''
+#   fixed.reverse.each do |n| 
+#     fixed.pop()
+#     extension += n 
+#       if n == 'x' 
+#       fixed_phone = extension.reverse, fixed.join('') 
+#       end 
+#   end 
   
-end 
+# end 
 
 
     
 
 # addresses
 # companies 
-# contacts
-phones  
+contacts
+# phones  
+emails
 

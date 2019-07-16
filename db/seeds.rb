@@ -9,8 +9,8 @@
 # Address.destroy_all 
 # Company.destroy_all
 CompanyProject.destroy_all 
-Contact.destroy_all 
-Email.destroy_all
+# Contact.destroy_all 
+# Email.destroy_all
 EmployeeProject.destroy_all 
 Employee.destroy_all 
 Image.destroy_all 
@@ -173,27 +173,63 @@ def emails
     emails = []
     columns = 
     [
-        :eamil_link_id,
+        :email_link_id,
         :email_address, 
         :email_type,
         :email_deleted,
-        :email_intforeegnid,
+        :email_intforeignid,
         :email_intid
     ]
 
     CSV.foreach('public/OldCSVFiles/Esto - Email MAP.xlsx - Esto - Email.csv', headers: true) do |row| 
-        if row['email_address']
+        if row['Emai_EmailAddress']
             emails.push({
                 email_link_id: row['Emai_EmailId'],
                 email_address: row['Emai_EmailAddress'],
                 email_type: 'temporary',
                 email_deleted: (true if row['Emai_Deleted'] == '1'),
                 email_intforeignid: row['emai_intforeignid'],
-                eamil_intid: row['eami_intid']
+                email_intid: row['emai_intid']
             })
         end
     end
     Email.import columns, emails, validate: false 
+end
+
+
+def projects
+    projects = []
+    columns = 
+    [
+        :old_company_id,
+        :old_contact_id,
+        :old_project_id,
+        :old_assigned_userid,
+        :description, 
+        :project_type, 
+        :project_status,
+        :location,
+        :job_number,
+        :old_notes
+    ]
+
+    CSV.foreach('public/OldCSVFiles/esto-projects - esto-projects.csv', headers: true) do |row|
+        projects.push({
+            old_project_id: row['Oppo_OpportunityId'],
+            old_contact_id: (row['Oppo_PrimaryPersonId'] if row['Oppo_PrimaryPersonId']),
+            old_company_id: row['Oppo_PrimaryCompanyId'],
+            old_assigned_userid: row['Oppo_AssignedUserId'],
+            description: row['Oppo_Description'],
+            project_type: (row['Oppo_Type'] if row['Oppo_Type']),
+            project_status: row['Completed'],
+            location: row['oppo_location'],
+            job_number: row['oppo_jobnumber'], 
+            old_notes: row['Oppo_Note']
+        }) 
+        
+    end
+    Project.import columns, projects, validate: false 
+
 end
 
 
@@ -219,7 +255,10 @@ end
 
 # addresses
 # companies 
-contacts
+# contacts
 # phones  
-emails
+# emails
+projects
+# company_projects
+
 

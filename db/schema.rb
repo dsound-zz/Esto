@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_14_013222) do
+ActiveRecord::Schema.define(version: 2019_07_16_175843) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -151,15 +151,33 @@ ActiveRecord::Schema.define(version: 2019_07_14_013222) do
 
   create_table "projects", force: :cascade do |t|
     t.integer "old_project_id"
-    t.string "first_name"
-    t.string "last_name"
-    t.string "role"
-    t.string "email"
-    t.string "office_phone"
-    t.string "cell_phone"
-    t.string "company_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "old_company_id"
+    t.integer "old_contact_id"
+    t.integer "old_assigned_userid"
+    t.string "description"
+    t.string "project_type"
+    t.string "company"
+    t.integer "company_id"
+    t.string "pq_worksheet_num"
+    t.string "pg_worksheet_notes"
+    t.string "scout_images_sent"
+    t.string "prelims_sent"
+    t.string "finals_delivered"
+    t.boolean "shoot_sheet_received"
+    t.datetime "image_order_1_date"
+    t.datetime "image_order_2_date"
+    t.datetime "image_order_3_date"
+    t.string "image_order_1_notes"
+    t.string "image_order_2_notes"
+    t.string "image_order_3_notes"
+    t.string "participant_info"
+    t.string "other_notes"
+    t.string "project_status"
+    t.string "location"
+    t.string "job_number"
+    t.string "old_notes"
   end
 
 end

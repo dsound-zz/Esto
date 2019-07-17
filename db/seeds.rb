@@ -17,7 +17,7 @@ Image.destroy_all
 Invoice.destroy_all 
 ProjectContact.destroy_all 
 ProjectImage.destroy_all 
-Project.destroy_all 
+# Project.destroy_all 
 # Phone.destroy_all 
 
 require 'csv'
@@ -250,6 +250,39 @@ end
   
 # end 
 
+def images 
+    images = []
+    columns =
+    [
+       :caption,
+       :photographer,
+       :image_number,
+       :file_size,
+       :keywords 
+    ]
+
+    CSV.foreach('/Users/demiansims/Development/Esto/public/OldCSVFiles/esto-online_archive-DL - esto-online_archive.csv', headers: true) do |row|
+        images.push({
+            caption: row['Caption'],
+            photographer: row['Photographer'],
+            image_number: row['image_number (with job number as prefix)'],
+            file_size: row['File Size'],
+            keywords: row['Keywords']
+        })
+    end
+    Image.import columns, images, validates: false 
+end 
+
+
+def company_projects
+    old_project_ids = Project.pluck(:old_project_id)
+    old_company_ids = Company.pluck(:old_company_id)
+    old_project_ids.each { |op| CompanyProject.create(:old_project_id => op )}
+    old_company_ids.each { |oc| CompanyProject.create(:old_company_id => oc )}
+end
+
+ 
+
 
     
 
@@ -258,7 +291,9 @@ end
 # contacts
 # phones  
 # emails
-projects
-# company_projects
+# projects
+# images 
+
+company_projects
 
 

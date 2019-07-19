@@ -7,17 +7,17 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 # Address.destroy_all 
-Company.destroy_all
-ProjectContact.destroy_all 
-Contact.destroy_all 
-Email.destroy_all
-EmployeeProject.destroy_all 
-Employee.destroy_all 
+# Company.destroy_all
+# ProjectContact.destroy_all 
+# Contact.destroy_all 
+# Email.destroy_all
+# EmployeeProject.destroy_all 
+# Employee.destroy_all 
 # Image.destroy_all 
-Invoice.destroy_all 
-ProjectImage.destroy_all 
+# Invoice.destroy_all 
+# ProjectImage.destroy_all 
 # Project.destroy_all 
-Phone.destroy_all 
+# Phone.destroy_all 
 
 require 'csv'
 
@@ -52,6 +52,10 @@ def addresses
         end
         Address.import columns, addresses, validate: false
 end 
+
+def create_address_links
+
+end
 
 
 def companies 
@@ -224,11 +228,20 @@ def projects
             job_number: row['oppo_jobnumber'], 
             old_notes: row['Oppo_Note']
         }) 
-        
     end
     Project.import columns, projects, validate: false 
-
 end
+
+# def add_company_id 
+#     columns = 
+#     [
+#         :company_id
+#     ] 
+#         CSV.foreach('/Users/demiansims/Development/Esto/public/OldCSVFiles/esto company 122118 - esto company 122118.csv', headers: true) do |row|
+#             Project.update(company_id: row['Comp_CompanyId'])
+#         end
+#     Project.import columns, projects, validates: false 
+# end
 
 
 def images 
@@ -271,17 +284,20 @@ end
 
 
 
+
+
  
 
 
     
 
 # addresses
-companies 
+ 
 # contacts
 # phones  
 # emails
 # projects
+add_company_id
 # images 
 # old_relation_creation
 

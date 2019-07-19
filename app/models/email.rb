@@ -1,3 +1,3 @@
 class Email < ApplicationRecord
-    belongs_to :contact 
+    belongs_to :emailable, polymorphic: true  
 end

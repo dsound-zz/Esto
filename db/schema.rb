@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_17_172804) do
+ActiveRecord::Schema.define(version: 2019_07_19_012417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,7 +38,6 @@ ActiveRecord::Schema.define(version: 2019_07_17_172804) do
     t.datetime "updated_at", null: false
     t.string "website"
     t.boolean "company_status"
-    t.string "library_dir"
     t.string "legacy_compid"
     t.integer "old_address_id"
   end
@@ -70,11 +69,13 @@ ActiveRecord::Schema.define(version: 2019_07_17_172804) do
     t.string "email_address"
     t.string "email_intforeignid"
     t.string "email_intid"
-    t.integer "contact_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "email_type"
     t.boolean "email_deleted"
+    t.string "emailable_type"
+    t.bigint "emailable_id"
+    t.index ["emailable_type", "emailable_id"], name: "index_emails_on_emailable_type_and_emailable_id"
   end
 
   create_table "employee_projects", force: :cascade do |t|
@@ -90,13 +91,6 @@ ActiveRecord::Schema.define(version: 2019_07_17_172804) do
     t.string "last_name"
     t.string "role"
     t.string "email"
-    t.string "office_phone"
-    t.string "cell_phone"
-    t.string "home_address_line1"
-    t.string "home_address_line2"
-    t.string "city"
-    t.string "state"
-    t.string "zip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -132,6 +126,9 @@ ActiveRecord::Schema.define(version: 2019_07_17_172804) do
     t.string "phone_area_code"
     t.string "phone_ext"
     t.integer "phone_foreign_id"
+    t.string "phonable_type"
+    t.bigint "phonable_id"
+    t.index ["phonable_type", "phonable_id"], name: "index_phones_on_phonable_type_and_phonable_id"
   end
 
   create_table "project_contacts", force: :cascade do |t|
@@ -157,8 +154,6 @@ ActiveRecord::Schema.define(version: 2019_07_17_172804) do
     t.integer "old_assigned_userid"
     t.string "description"
     t.string "project_type"
-    t.string "company"
-    t.integer "company_id"
     t.string "pq_worksheet_num"
     t.string "pg_worksheet_notes"
     t.string "scout_images_sent"

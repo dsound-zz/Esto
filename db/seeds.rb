@@ -7,23 +7,21 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 # Address.destroy_all 
-# Company.destroy_all
-CompanyProject.destroy_all 
-# Contact.destroy_all 
-# Email.destroy_all
+Company.destroy_all
+ProjectContact.destroy_all 
+Contact.destroy_all 
+Email.destroy_all
 EmployeeProject.destroy_all 
 Employee.destroy_all 
-Image.destroy_all 
+# Image.destroy_all 
 Invoice.destroy_all 
-ProjectContact.destroy_all 
 ProjectImage.destroy_all 
 # Project.destroy_all 
-# Phone.destroy_all 
+Phone.destroy_all 
 
 require 'csv'
 
 def addresses 
-
     addresses = []
     columns = 
         [
@@ -53,8 +51,8 @@ def addresses
             end
         end
         Address.import columns, addresses, validate: false
-       
 end 
+
 
 def companies 
     companies = []
@@ -63,7 +61,6 @@ def companies
         :old_company_id,
         :name, 
         :website, 
-        :library_dir,
         :old_address_id, 
         :company_status
     ]
@@ -75,7 +72,6 @@ def companies
                     old_company_id: row['Comp_CompanyId'],
                     name: row['Comp_Name'],
                     website: (row['Comp_WebSite'] if row['Comp_WebSite']),
-                    library_dir: row['Comp_LibraryDir'],
                     legacy_comp_id: row['omp_legacycompid'],
                     old_address_id: row['Comp_PrimaryAddressId'],
                     **(['Comp_Status'] == 'Active' ? {company_status: 'Active'} : {company_status: 'Inactive'}) 
@@ -85,6 +81,7 @@ def companies
     end  
     Company.import columns, companies, validate: false 
 end 
+
 
 def contacts
     contacts = []
@@ -114,7 +111,7 @@ def contacts
         end 
     end
             
-        Contact.import columns, contacts, validate: false 
+    Contact.import columns, contacts, validate: false 
 end
 
 
@@ -168,6 +165,7 @@ def phones
     
     Phone.import columns, phones, validate: false
 end 
+
 
 def emails
     emails = []
@@ -233,23 +231,6 @@ def projects
 end
 
 
-
-# old method for fixing phone numbers - not used
-
-# def fix_phone_number(num)
-#   fixed_phone = []
-#   fixed = num.gsub(' ', '').split('')
-#   extension = ''
-#   fixed.reverse.each do |n| 
-#     fixed.pop()
-#     extension += n 
-#       if n == 'x' 
-#       fixed_phone = extension.reverse, fixed.join('') 
-#       end 
-#   end 
-  
-# end 
-
 def images 
     images = []
     columns =
@@ -261,7 +242,7 @@ def images
        :keywords 
     ]
 
-    CSV.foreach('/Users/demiansims/Development/Esto/public/OldCSVFiles/esto-online_archive-DL - esto-online_archive.csv', headers: true) do |row|
+    CSV.foreach('/Users/demiansims/Development/Esto/public/OldCSVFiles/esto-online_archive-DL - esto-online_archive .csv', headers: true) do |row|
         images.push({
             caption: row['Caption'],
             photographer: row['Photographer'],
@@ -274,12 +255,21 @@ def images
 end 
 
 
-def company_projects
+def old_relation_creation
     old_project_ids = Project.pluck(:old_project_id)
     old_company_ids = Company.pluck(:old_company_id)
-    old_project_ids.each { |op| CompanyProject.create(:old_project_id => op )}
-    old_company_ids.each { |oc| CompanyProject.create(:old_company_id => oc )}
+    old_contact_ids = Contact.pluck(:old_contact_id)
+    
+    old_project_ids.each do |op| 
+        CompanyProject.create(:project_id => op )
+        ProjectContact.create(:project_id => op )
+    end
+    
+    old_company_ids.each { |pc| CompanyProject.create(:company_id => pc)}
+    old_contact_ids.each { |pc| ProjectContact.create(:contact_id => pc)}
 end
+
+
 
  
 
@@ -287,13 +277,14 @@ end
     
 
 # addresses
-# companies 
+companies 
 # contacts
 # phones  
 # emails
 # projects
 # images 
+# old_relation_creation
 
-company_projects
+
 
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_19_205630) do
+ActiveRecord::Schema.define(version: 2019_07_24_223219) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,26 +27,20 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
     t.datetime "updated_at", null: false
     t.string "country"
     t.integer "old_address_id"
-    t.boolean "address_type", default: true
+    t.string "address_type"
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable_type_and_addressable_id"
   end
 
   create_table "companies", force: :cascade do |t|
     t.integer "old_company_id"
     t.string "name"
+    t.string "company_phone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "website"
     t.boolean "company_status"
     t.string "legacy_compid"
     t.integer "old_address_id"
-  end
-
-  create_table "company_projects", force: :cascade do |t|
-    t.integer "company_id"
-    t.integer "project_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -62,6 +56,7 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
     t.string "department"
     t.string "old_address_id"
     t.string "old_company_id"
+    t.integer "pers_secTerr"
   end
 
   create_table "emails", force: :cascade do |t|
@@ -71,10 +66,10 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
     t.string "email_intid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "email_type"
     t.boolean "email_deleted"
     t.string "emailable_type"
     t.bigint "emailable_id"
+    t.string "email_type"
     t.index ["emailable_type", "emailable_id"], name: "index_emails_on_emailable_type_and_emailable_id"
   end
 
@@ -83,6 +78,8 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
     t.integer "project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "old_employee_id"
+    t.integer "old_project_id"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -90,7 +87,6 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
     t.string "first_name"
     t.string "last_name"
     t.string "role"
-    t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -115,19 +111,20 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
   end
 
   create_table "phones", force: :cascade do |t|
-    t.string "old_phone_id"
+    t.integer "old_phone_id"
+    t.integer "old_company_id"
+    t.integer "old_address_id"
     t.string "phone_type"
-    t.string "phone_num"
-    t.string "phone_initid"
-    t.string "contact_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "phone_country_code"
     t.string "phone_area_code"
+    t.string "phone_num"
     t.string "phone_ext"
+    t.integer "phone_initid"
     t.integer "phone_foreign_id"
     t.string "phonable_type"
     t.bigint "phonable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["phonable_type", "phonable_id"], name: "index_phones_on_phonable_type_and_phonable_id"
   end
 
@@ -136,6 +133,8 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
     t.integer "contact_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "old_project_id"
+    t.integer "old_contact_id"
   end
 
   create_table "project_images", force: :cascade do |t|
@@ -143,6 +142,8 @@ ActiveRecord::Schema.define(version: 2019_07_19_205630) do
     t.integer "project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "image_number"
+    t.integer "old_project_id"
   end
 
   create_table "projects", force: :cascade do |t|

@@ -33,6 +33,7 @@ def addresses
             :country, 
             :zipcode,
             :address_type
+        
         ]
 
         CSV.foreach('public/OldCSVFiles/esto - address - esto - address.csv', headers: true) do |row|   
@@ -46,23 +47,22 @@ def addresses
                         state: row['Addr_State'],
                         country: row['Addr_Country'],
                         zipcode: row['Addr_PostCode'],
-                        address_type: true
+                        address_type: 'Business'
+                        
                     })
             end
         end
         Address.import columns, addresses, validate: false
 end 
 
-def create_address_links
 
-end
 
 
 def companies 
     companies = []
     columns = 
     [
-        :old_company_id,
+        :id,
         :name, 
         :website, 
         :old_address_id, 
@@ -73,7 +73,7 @@ def companies
         if row['Comp_Name'] != 'NULL'
             companies.push(
                 {
-                    old_company_id: row['Comp_CompanyId'],
+                    id: row['Comp_CompanyId'],
                     name: row['Comp_Name'],
                     website: (row['Comp_WebSite'] if row['Comp_WebSite']),
                     legacy_comp_id: row['omp_legacycompid'],
@@ -92,25 +92,31 @@ def contacts
     columns = 
     [
         :old_contact_id,
-        :old_company_id,
         :old_address_id,
+        :old_company_id,
+        :source, 
         :title,
         :first_name, 
         :last_name, 
+        :legacy_personid,
+        :pers_secTerr
+
     ]
 
     CSV.foreach('public/OldCSVFiles/esto - person - esto - person.csv', headers: true) do |row| 
         if row['Pers_FirstName'] || row['Pers_LastName']
             contacts.push(
             {
-                old_contact_id: row['Pers_PersonId'],
+
                 old_company_id: row['Pers_CompanyId'],
+                old_contact_id: row['Pers_PersonId'],
                 old_address_id: row['Pers_PrimaryAddressId'],
                 first_name: row['Pers_FirstName'],
                 last_name: row['Pers_LastName'],
                 title: row['Pers_Title'],
                 source: row['Pers_Source'],
-                department: row['Pers_Department']
+                legacy_personid: row['pers_legacypersid'],
+                pers_secTerr: row['pers_SecTerr']
             })
         end 
     end
@@ -188,7 +194,7 @@ def emails
             emails.push({
                 email_link_id: row['Emai_EmailId'],
                 email_address: row['Emai_EmailAddress'],
-                email_type: 'temporary',
+                email_type: 'Business',
                 email_deleted: (true if row['Emai_Deleted'] == '1'),
                 email_intforeignid: row['emai_intforeignid'],
                 email_intid: row['emai_intid']
@@ -202,10 +208,10 @@ end
 def projects
     projects = []
     columns = 
-    [
+    [   
+        :id, 
         :old_company_id,
         :old_contact_id,
-        :old_project_id,
         :old_assigned_userid,
         :description, 
         :project_type, 
@@ -217,7 +223,7 @@ def projects
 
     CSV.foreach('public/OldCSVFiles/esto-projects - esto-projects.csv', headers: true) do |row|
         projects.push({
-            old_project_id: row['Oppo_OpportunityId'],
+            id: row['Oppo_OpportunityId'],
             old_contact_id: (row['Oppo_PrimaryPersonId'] if row['Oppo_PrimaryPersonId']),
             old_company_id: row['Oppo_PrimaryCompanyId'],
             old_assigned_userid: row['Oppo_AssignedUserId'],
@@ -229,8 +235,53 @@ def projects
             old_notes: row['Oppo_Note']
         }) 
     end
-    Project.import columns, projects, validate: false 
-end
+    Project.import columns, projects, validate: false
+ end
+
+ def join_table_old_ids 
+    project_contacts = []
+    company_contacts = []
+    employee_projects = []
+    project_contacts_columns = 
+    [
+        :old_project_id, 
+        :old_contact_id
+    ]
+
+    company_contacts_columns = 
+    [
+        :old_company_id,
+        :old_contact_id
+    ]
+
+    employee_projects_columns = 
+    [
+        :old_employee_id,
+        :old_project_id
+    ]
+
+    CSV.foreach('public/OldCSVFiles/esto-projects - esto-projects.csv', headers: true) do |row|
+        project_contacts.push({
+            old_project_id: row['Oppo_OpportunityId'],
+            old_contact_id: row['Oppo_PrimaryPersonId']
+        })
+
+        company_contacts.push({
+            old_company_id: row['Oppo_PrimaryCompanyId'],
+            old_contact_id: row['Oppo_PrimaryPersonId']
+        })
+        employee_projects.push({ 
+            old_employee_id: row['Oppo_AssignedUserId'],
+            old_project_id: row['Oppo_OpportunityId']
+        })
+    end 
+    ProjectContact.import project_contacts_columns, project_contacts, validate: false
+    CompanyContact.import company_contacts_columns, company_contacts, validate: false 
+    EmployeeProject.import employee_projects_columns, employee_projects, validate: false      
+    
+ end
+
+
 
 # def add_company_id 
 #     columns = 
@@ -264,23 +315,39 @@ def images
             keywords: row['Keywords']
         })
     end
-    Image.import columns, images, validates: false 
+    Image.import columns, images, validate: false 
 end 
 
+# old method to create old relations in joins - not used
 
-def old_relation_creation
-    old_project_ids = Project.pluck(:old_project_id)
-    old_company_ids = Company.pluck(:old_company_id)
-    old_contact_ids = Contact.pluck(:old_contact_id)
+# def old_relation_creation
+#     old_project_ids = Project.pluck(:old_project_id)
+#     old_company_ids = Company.pluck(:old_company_id)
+#     old_contact_ids = Contact.pluck(:old_contact_id)
     
-    old_project_ids.each do |op| 
-        CompanyProject.create(:project_id => op )
-        ProjectContact.create(:project_id => op )
-    end
+#     old_project_ids.each do |op| 
+#         CompanyProject.create(:project_id => op )
+#         ProjectContact.create(:project_id => op )
+#     end
     
-    old_company_ids.each { |pc| CompanyProject.create(:company_id => pc)}
-    old_contact_ids.each { |pc| ProjectContact.create(:contact_id => pc)}
-end
+#     old_company_ids.each { |pc| CompanyProject.create(:company_id => pc)}
+#     old_contact_ids.each { |pc| ProjectContact.create(:contact_id => pc)}
+# end
+
+# def add_company_addresses 
+#     Company.all.each do |comp| 
+#         Address.update(:addressable_id => comp.id)
+# end
+
+# ActiveRecord::Base.connection.execute(<<~EOQ)
+#   WITH companies_id_map AS (
+#     SELECT companies.id, companies.old_id
+#     FROM companies
+#   )
+#   UPDATE othermodels
+#   SET company_id = companies_id_map.id
+#   WHERE othermodels.old_company_id = companies_id_map.old_id
+# EOQ
 
 
 
@@ -289,17 +356,17 @@ end
  
 
 
-    
+  # SEED METHODS!  
 
-# addresses
- 
+addresses
 # contacts
 # phones  
 # emails
 # projects
-add_company_id
 # images 
-# old_relation_creation
+# companies 
+# join_table_old_ids
+
 
 
 

@@ -23,7 +23,7 @@ def addresses
                         line2: row['Addr_Address2'],
                         city: row['Addr_City'],
                         state: row['Addr_State'],
-                        country: row['Addr_Country'],
+                        country: (row['Addr_Country'] == nil ? 'United States' : row['Addr_Country']),
                         zipcode: row['Addr_PostCode']
                     })
             end
@@ -313,10 +313,10 @@ end
 
 # emails
 # images 
-# companies 
+companies 
 # projects
 # contacts
-# addresses
+addresses
 # phones  
 # join_table_old_ids
 
